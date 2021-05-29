@@ -1,0 +1,26 @@
+{
+  "name": "cp-script",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "cps": "./index.js"
+  },
+  "scripts": {
+    "reinstall": "npm rm cp-script -g && npm i -g"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnsonYeung/cp-script.git"
+  },
+  "author": "Anson Yeung",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AnsonYeung/cp-script/issues"
+  },
+  "homepage": "https://github.com/AnsonYeung/cp-script#readme",
+  "dependencies": {
+    "fs-extra": "^10.0.0",
+    "yargs": "^17.0.1"
+  }
+}
