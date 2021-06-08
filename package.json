@@ -21,6 +21,7 @@
   "homepage": "https://github.com/AnsonYeung/cp-script#readme",
   "dependencies": {
     "fs-extra": "^10.0.0",
+    "pidusage": "^2.0.21",
     "yargs": "^17.0.1"
   }
 }
