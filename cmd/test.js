@@ -2,6 +2,7 @@ const pidusage = require('pidusage');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
+const { write } = require('fs');
 
 exports.command = 'test [problemDir]';
 
@@ -43,9 +44,9 @@ exports.handler = async argv => {
                     });
                     let memMonitor = () => {
                         pidusage(solutionProcess.pid, (err, stats) => {
-                            if (err.code === 'ENOENT') return;
+                            if (err && err.code === 'ENOENT') return;
                             if (err) throw err;
-                            memUsage = Math.max(memUsage, stat.memory);
+                            memUsage = Math.max(memUsage, stats.memory);
                         });
                     };
                     memMonitor();
@@ -78,6 +79,7 @@ exports.handler = async argv => {
                     solutionProcess.stdout.on('data', (data) => {
                         output += data;
                     });
+                    setTimeout(solutionProcess.kill.bind(solutionProcess), problemJson.timeLimit + 1000);
                 });
                 let tle = new Promise(res => {
                     setTimeout(res.bind(null, {
@@ -103,12 +105,12 @@ exports.handler = async argv => {
                             status: 'Runtime Error',
                             accepted: false
                         };
-                    } else if (result.output.trim() !== problemJson.tests[i].output.trim()) {
+                    } else if (result.output.trim().split('\r\n').join('\n') !== problemJson.tests[i].output.trim()) {
                         return {
                             status: 'Wrong Answer',
                             accepted: false,
-                            output: result.output,
-                            expected: problemJson.tests[i].output
+                            output: result.output.trim(),
+                            expected: problemJson.tests[i].output.trim()
                         }
                     } else {
                         return {
