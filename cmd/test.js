@@ -4,6 +4,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const { write } = require('fs');
 
+const outputFilename = process.platform == 'win32' ? 'solution.exe' : 'solution';
+
 exports.command = 'test [problemDir]';
 
 exports.describe = 'Test the solution with the sample data';
@@ -17,7 +19,7 @@ exports.builder = yargs => {
 
 exports.handler = async argv => {
     let problemJsonTask = fs.readJson(path.join(argv.problemDir, 'problem.json'));
-    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-o', 'solution.exe', 'solution.cpp'], {
+    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-o', outputFilename, 'solution.cpp'], {
         stdio: ['ignore', 'inherit', 'inherit'],
     });
     compiler.on('close', async code => {
@@ -38,7 +40,7 @@ exports.handler = async argv => {
                     let output = '';
                     let startTime = process.hrtime.bigint();
                     let rte = false;
-                    let solutionProcess = childProcess.spawn(path.resolve(argv.problemDir, 'solution.exe'), {
+                    let solutionProcess = childProcess.spawn(path.resolve(argv.problemDir, outputFilename), {
                         cwd: path.resolve(argv.problemDir, 'tests', i.toString()),
                         stdio: [fd, 'pipe', 'inherit']
                     });
