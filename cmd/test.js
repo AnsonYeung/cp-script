@@ -2,7 +2,7 @@ const pidusage = require('pidusage');
 const childProcess = require('child_process');
 const fs = require('fs-extra');
 const path = require('path');
-const { write } = require('fs');
+const compile = require('../utils/compile');
 
 const outputFilename = process.platform == 'win32' ? 'solution.exe' : 'solution';
 
@@ -19,15 +19,8 @@ exports.builder = yargs => {
 
 exports.handler = async argv => {
     let problemJsonTask = fs.readJson(path.join(argv.problemDir, 'problem.json'));
-    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-o', outputFilename, 'solution.cpp'], {
-        stdio: ['ignore', 'inherit', 'inherit'],
-    });
-    compiler.on('close', async code => {
-        if (code != 0) {
-            console.log(`gcc exited with code ${code}`);
-            return;
-        }
 
+    compile(outputFilename, argv.problemDir).then(async () => {
         let problemJson = await problemJsonTask;
 
         let testArray = [];
@@ -149,5 +142,5 @@ ${results[i].expected}`
             console.log(`${accepted} of ${results.length} total tests are passed`);
         }
 
-    })
+    });
 };
