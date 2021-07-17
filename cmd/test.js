@@ -17,7 +17,7 @@ exports.builder = yargs => {
 
 exports.handler = async argv => {
     let problemJsonTask = fs.readJson(path.join(argv.problemDir, 'problem.json'));
-    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-DONLINE_JUDGE', '-Wall', '-o', 'solution.exe', 'solution.cpp'], {
+    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-o', 'solution.exe', 'solution.cpp'], {
         stdio: ['ignore', 'inherit', 'inherit'],
     });
     compiler.on('close', async code => {
