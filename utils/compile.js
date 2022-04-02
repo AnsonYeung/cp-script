@@ -2,7 +2,7 @@ const childProcess = require('child_process');
 const path = require('path');
 
 module.exports = (outFilename, dir) => {
-    let compiler = childProcess.spawn('g++', ['-std=c++17', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-Og', '-o', path.resolve(dir, outFilename), path.resolve(dir, 'solution.cpp')], {
+    let compiler = childProcess.spawn('g++', ['-std=c++17', '-fsanitize=address,undefined', '-ggdb3', '-march=native', '-DLOCAL', '-Wall', '-Og', '-o', path.resolve(dir, outFilename), path.resolve(dir, 'solution.cpp')], {
         stdio: ['ignore', 'inherit', 'inherit'],
     });
     return new Promise((res, rej) => {
