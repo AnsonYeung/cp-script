@@ -16,7 +16,11 @@ exports.builder = yargs => {
 exports.handler = async argv => {
     const server = net.server(argv.port);
     let targetProblem = await server.getNext();
-    let problemTask = problem.makeProblem(path.resolve(process.env.CP, 'problems', argv.name == null ? path.join(targetProblem.group, targetProblem.name) : argv.name), targetProblem);
+    let problemTask = problem.makeProblem(
+        path.resolve(process.env.CP, 'problems', argv.name == null ? path.join(targetProblem.group, targetProblem.name) : argv.name),
+        targetProblem,
+        argv.template
+    );
     server.close();
     await problemTask;
     process.exit();

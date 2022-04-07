@@ -23,7 +23,7 @@ exports.handler = async argv => {
         let nextProblem = await server.getNext();
         if (nextProblem.batch.id === batchId) {
             let problemPath = path.resolve(basePath, nextProblem.name);
-            problemsPromise.push(problem.makeProblem(problemPath, nextProblem));
+            problemsPromise.push(problem.makeProblem(problemPath, nextProblem, argv.template));
             --size;
         }
     }
