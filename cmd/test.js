@@ -40,6 +40,7 @@ exports.handler = async argv => {
                     let memMonitor = () => {
                         pidusage(solutionProcess.pid, (err, stats) => {
                             if (err && err.code === 'ENOENT') return;
+                            if (err && err.code === 'ESRCH') return;
                             if (err) throw err;
                             memUsage = Math.max(memUsage, stats.memory);
                         });
