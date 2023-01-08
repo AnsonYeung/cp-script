@@ -26,6 +26,7 @@ exports.handler = async argv => {
         let testArray = [];
 
         for (let i in problemJson.tests) {
+            let timeout_ids = [];
             let filename = problemJson.input.type === 'file' ? problemJson.input.fileName : i.toString() + '.in';
             testArray.push(fs.open(path.resolve(argv.problemDir, 'tests', i.toString(), filename), 'r').then(fd => {
                 let progEnd = new Promise(res => {
@@ -51,7 +52,7 @@ exports.handler = async argv => {
                         let time = Number(endTime - startTime) / 1000000;
                         if (code !== 0) rte = true;
                         if (problemJson.output.type === 'file') {
-                            res(fs.readFile(path.resolve(argv.problemDir, 'tests', i.toString(), problemJson.output.fileName), {encoding: 'utf8'}).then(output => {
+                            res(fs.readFile(path.resolve(argv.problemDir, 'tests', i.toString(), problemJson.output.fileName), { encoding: 'utf8' }).then(output => {
                                 return {
                                     output,
                                     time,
@@ -75,17 +76,18 @@ exports.handler = async argv => {
                     solutionProcess.stdout.on('data', (data) => {
                         output += data;
                     });
-                    setTimeout(solutionProcess.kill.bind(solutionProcess), problemJson.timeLimit + 1000);
+                    timeout_ids.push(setTimeout(solutionProcess.kill.bind(solutionProcess), problemJson.timeLimit + 1000));
                 });
                 let tle = new Promise(res => {
-                    setTimeout(res.bind(null, {
+                    timeout_ids.push(setTimeout(res.bind(null, {
                         output: '',
                         time: problemJson.timeLimit + 1000,
                         memUsage: 0,
                         rte: false
-                    }), problemJson.timeLimit + 1000);
+                    }), problemJson.timeLimit + 1000));
                 });
                 return Promise.any([progEnd, tle]).then(result => {
+                    timeout_ids.forEach(clearTimeout);
                     if (result.time > problemJson.timeLimit) {
                         return {
                             status: 'Time Limit Exceeded',
@@ -128,7 +130,7 @@ exports.handler = async argv => {
                 console.log(`Test ${i}: ${results[i].status}`);
                 if (results[i].status == 'Wrong Answer') {
                     console.log(
-`Your Answer:
+                        `Your Answer:
 ${results[i].output}
 Jury's Answer:
 ${results[i].expected}`
